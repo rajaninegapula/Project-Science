@@ -1,5 +1,5 @@
 //pokemon list in an array
-let pokemonlist = [{
+let pokemonList = [{
     name: 'Squirtle',
     height: 1.08,
     type: ['water']
