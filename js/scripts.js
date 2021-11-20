@@ -20,3 +20,11 @@ let pokemonList = [{
     types: ['bug', 'flying']
   }
 ];
+//creating a 'for' loop and 'if else' condition for checking top height pokemon object
+for (let i = 0; i < pokemonList.length; i++){
+  if (pokemonList[i].height > 3) {
+    document.write(pokemonList[i].name + ("height" + pokemonList[i].height) + “Wow, that’ s big!”);
+  } else {
+    document.write(pokemonList[i].name + ("height" + pokemonList[i].height));
+}
+}
