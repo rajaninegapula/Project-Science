@@ -1,0 +1,16 @@
+/*colors used:
+Fontcolor: blue
+backgroundcolor: white
+*/
+:root {
+  --stylef: italic;
+  --sizef: 20px;
+  --colorf: #006400;
+  --bgcolorf: #F0FFFF;
+}
+body {
+  font-style: var(--stylef);
+  font-size: var(--sizef);
+  color: var(--colorf);
+  background-color: var(--bgcolorf);
+}
