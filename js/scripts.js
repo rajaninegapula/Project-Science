@@ -1,89 +1,96 @@
-let pokemonList=[
-
-    {
-        name: 'Charmander',
-        height:0.6,
-        type:["Monster", "Dragon"]
-    },
-
-    {
-       name: 'Bulbasaur',
-        height:0.7,
-        type:["Monster", "Grass"]
-    },
-
-    {
-        name: 'Blastoise',
-        height:0.6,
-        type:["Monster", "Water 1"]
-    },
-
-    {
-        name: 'Ivysaur',
-        height:1,
-        type:["Monster", "Grass"]
-    },
-
-    {
-        name: 'Venusaur',
-        height:2,
-        type:["Monster", "Grass"]
-    },
-
-    {
-        name: 'Charizard',
-        height:1.7,
-        type:["Monster", "Dragon"]
-    },
-
-     {
-        name: 'Nidoking',
-        height:1.4,
-        type:["Monster", "Field"]
-    },
-
-     {
-        name: 'Nidorino',
-        height:0.9,
-        type:["Monster", "Field"]
-    },
-
-     {
-        name: 'Charmeleon',
-        height:1.1,
-        type:["Monster", "Dragon"]
-    },
-
-
-
-];
-
-// IIFE pokemonRepository
 let pokemonRepository = (function () {
-   return {
-      add: function(pokemon) {
-        pokemonList.push(pokemon);
-      },
-      getAll: function() {
-        return pokemonList;
-      }
-    };
-  })();
+  let pokemonList=[];
+    let apiUrl = "https://pokeapi.co/api/v2/pokemon/?limit=20";
 
-  pokemonRepository.add({ name: 'Ferrothorn', height: 1, types:['grass', 'mineral'] });
-  pokemonRepository.getAll();
+  function add(pokemon) {
+    if (
+      typeof pokemon === "object" &&
+      "name" in pokemon //&&
+      //"height" in pokemon &&
+      //"types" in pokemon
+    ) {
+      pokemonList.push(pokemon);
+    } else {
+      console.log("pokemon is not correct");
+    }
+  }
+  function getAll() {
+    return pokemonList;
+  }
 
-  // IIFE function to loop through the  pokemonList array
-(function () {
-    pokemonList.forEach(function(pokemon) {
-        let pokemonName = pokemon.name
-        let pokemonHeight = pokemon.height
-        /* This checks to see if a pokemon height is greater than or equal to 2 the add wow, that's big. Otherwise it should just print theri names and hight */
-        if(pokemonHeight >= 2) {
-            document.write("<p>" + pokemonName + ' (height : ' + pokemonHeight + ')' + ' - Wow, that\'s big!' + "</p>");
-        } else {
-            document.write("<p>" + pokemonName + ' (height : ' + pokemonHeight + ')' + "</p>");
-        }
+     function loadList() {
+    return fetch(apiUrl).then(function (response) {
+      return response.json();
+    }).then(function (json) {
+      json.results.forEach(function (item) {
+        let pokemon = {
+          name: item.name,
+          detailsUrl: item.url
+        };
+        add(pokemon);
+      });
+    }).catch(function (e) {
+      console.error(e);
+    })
+  }
 
-        });
+
+  function loadDetails(item) {
+    let url = item.detailsUrl;
+    return fetch(url).then(function (response) {
+      return response.json();
+    }).then(function (details) {
+      // Now we add the details to the item
+      item.imageUrl = details.sprites.front_default;
+      item.height = details.height;
+      item.types = details.types;
+    }).catch(function (e) {
+      console.error(e);
+    });
+  }
+  function addListItem(pokemon){
+    /* created a variable and assigned it to the class Pokemon-list which can be found in the html */
+    let pokemonList = document.querySelector(".pokemon-list");
+    /* Created a variable and assigned it to the new variable created which is li */
+    let listpokemon = document.createElement("li");
+    /* Created a button and with a name button */
+    let button = document.createElement("button");
+    /* Added the name of the pokemon to the button */
+    button.innerText = pokemon.name;
+    /* Add the class for the button which you have also styled using css */
+    button.classList.add("button-class");
+    /* put the button inside the li */
+    listpokemon.appendChild(button);
+    /* put the li inside the ul created */
+    pokemonList.appendChild(listpokemon);
+    button.addEventListener('click', function () {
+      showDetails(pokemon);
+    });
+
+  }
+   function showDetails(pokemon) {
+  loadDetails(pokemon).then(function () {
+    console.log(pokemon);
+  });
+}
+
+
+
+
+  return {
+    add: add,
+    getAll: getAll,
+    addListItem: addListItem,
+    showDetails: showDetails,
+    loadList: loadList,
+    loadDetails: loadDetails
+
+  };
 })();
+
+pokemonRepository.loadList().then(function() {
+  // Now the data is loaded!
+  pokemonRepository.getAll().forEach(function(pokemon){
+    pokemonRepository.addListItem(pokemon);
+  });
+});
